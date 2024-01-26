@@ -1,19 +1,19 @@
+import 'package:easy_do/controller/authentication_controller.dart';
 import 'package:easy_do/view/screens/login_screen.dart';
 import 'package:easy_do/view/widgets/custom_auth_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../model/app_const/app_const.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
-
   static const id = '/signup';
-
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   late GlobalKey<FormState> _formKey;
   late TextEditingController _nameCtr;
   late TextEditingController _emailCtr;
@@ -115,7 +115,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       const SizedBox(height: 8),
                       CustomInputField(
-                        controller: _emailCtr,
+                        controller: _passwordCtr,
                         hint: "Type password here...",
                         inputType: TextInputType.emailAddress,
                         validator: (value) {
@@ -136,7 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       const SizedBox(height: 8),
                       CustomInputField(
-                        controller: _emailCtr,
+                        controller: _confirmPasswordCtr,
                         hint: "Type password here...",
                         inputType: TextInputType.visiblePassword,
                         inputAction: TextInputAction.done,
@@ -151,34 +151,52 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      GestureDetector(
-                        onTap: () {
-                          if (_formKey.currentState!.validate()) {}
-                        },
-                        child: Container(
-                          height: size.height * 0.07,
-                          width: size.width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            color: AppColors.primaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Sign in",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: size.width * 0.05),
+                      ref.watch(authenticationProvider).isSignupLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryColor,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                if (_formKey.currentState!.validate()) {
+                                  ref
+                                      .read(authenticationProvider)
+                                      .getUserSignUp(
+                                    {
+                                      "name": _nameCtr.text,
+                                      "email": _emailCtr.text,
+                                      "password": _passwordCtr.text,
+                                    },
+                                  );
+                                }
+                              },
+                              child: Container(
+                                height: size.height * 0.07,
+                                width: size.width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  color: AppColors.primaryColor,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Sign in",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: size.width * 0.05),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text("Already have an account?"),
-                          TextButton(onPressed: () {
-                            Navigator.pushNamed(context, LoginScreen.id);
-                          }, child: Text("Sign in")),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, LoginScreen.id);
+                              },
+                              child: const Text("Sign in")),
                         ],
                       )
                     ],

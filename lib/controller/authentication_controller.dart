@@ -11,6 +11,7 @@ import '../model/models/login_model.dart';
 class AuthenticationController extends ChangeNotifier {
   final Dio dio = Dio();
   bool isLoading = false;
+  bool isSignupLoading = false;
 
   Future<Response> postData(String url, dynamic data) => dio.post(
         url,
@@ -46,9 +47,7 @@ class AuthenticationController extends ChangeNotifier {
         print('Timeout error');
       } else if (e.type == DioExceptionType.badResponse) {
         print('Response error: ${e.response?.statusCode}');
-        if (e.response?.statusCode == 400) {
-          return LoginModel.fromJson(e.response?.data);
-        }
+        if (e.response?.statusCode == 400) {}
       } else if (e.type == DioExceptionType.cancel) {
         print('Request cancelled');
       } else {
@@ -56,6 +55,40 @@ class AuthenticationController extends ChangeNotifier {
       }
     }
     isLoading = false;
+    notifyListeners();
+    return null;
+  }
+
+  Future<LoginModel?> getUserSignUp(dynamic data) async {
+    isSignupLoading = true;
+    notifyListeners();
+    try {
+      final response = await postData(RemoteUtils.signup, data);
+
+      if (response.statusCode == 200) {
+        isSignupLoading = false;
+        notifyListeners();
+
+        UserData.setAccessToken(LoginModel.fromJson(response.data).token);
+
+        return LoginModel.fromJson(response.data);
+      }
+    } on DioException catch (e) {
+      isSignupLoading = false;
+      notifyListeners();
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        print('Timeout error');
+      } else if (e.type == DioExceptionType.badResponse) {
+        print('Response error: ${e.response?.statusCode}');
+        if (e.response?.statusCode == 400) {}
+      } else if (e.type == DioExceptionType.cancel) {
+        print('Request cancelled');
+      } else {
+        print('Other error: $e');
+      }
+    }
+    isSignupLoading = false;
     notifyListeners();
     return null;
   }
