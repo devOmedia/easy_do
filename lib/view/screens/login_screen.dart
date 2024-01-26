@@ -1,19 +1,21 @@
+import 'package:easy_do/controller/authentication_controller.dart';
 import 'package:easy_do/model/app_const/app_const.dart';
 import 'package:easy_do/view/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/custom_auth_top_bar.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
-  static const id = '/login';
+  static const id = "/login";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   late GlobalKey<FormState> _formState;
   late TextEditingController _emailCtr;
 
@@ -108,35 +110,48 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 24),
 
                       ///SIGN IN BUTTON.
-                      GestureDetector(
-                        onTap: () {
-                          if (_formState.currentState!.validate()) {}
-                        },
-                        child: Container(
-                          height: size.height * 0.07,
-                          width: size.width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            color: AppColors.primaryColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Sign in",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: size.width * 0.05),
+                      ref.watch(authenticationProvider).isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                if (_formState.currentState!.validate()) {
+                                  ref
+                                      .read(authenticationProvider)
+                                      .getUserLoggedIn({
+                                    "email": _emailCtr.text,
+                                    "password": _passwordCtr.text,
+                                  });
+                                }
+                              },
+                              child: Container(
+                                height: size.height * 0.07,
+                                width: size.width,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  color: AppColors.primaryColor,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Sign in",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: size.width * 0.05),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text("Don't have an account?"),
-                          TextButton(onPressed: () {
-                            Navigator.pushNamed(context, SignupScreen.id);
-                          }, child: Text("Sign up")),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, SignupScreen.id);
+                              },
+                              child: Text("Sign up")),
                         ],
                       )
                     ],
@@ -175,8 +190,8 @@ class CustomInputField extends StatelessWidget {
       keyboardType: inputType,
       decoration: InputDecoration(
         // border: InputBorder.none,
-       border: OutlineInputBorder(
-          borderSide:  BorderSide(color: Colors.grey.shade100, width: 0.0),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade100, width: 0.0),
           borderRadius: BorderRadius.circular(14),
         ),
         hintText: hint,
@@ -184,7 +199,6 @@ class CustomInputField extends StatelessWidget {
           color: Colors.grey.shade300,
         ),
       ),
-
       validator: validator,
     );
   }

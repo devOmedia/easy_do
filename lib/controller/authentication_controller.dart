@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:easy_do/model/local_db/local_db.dart';
 import 'package:easy_do/model/remote_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/models/login_model.dart';
 
@@ -22,11 +26,15 @@ class AuthenticationController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final response = await postData("${RemoteUtils.login}", data);
+      final response = await postData(RemoteUtils.login, data);
 
       if (response.statusCode == 200) {
         isLoading = false;
         notifyListeners();
+
+        UserData.setAccessToken(LoginModel.fromJson(response.data).token);
+
+        log(response.data);
 
         return LoginModel.fromJson(response.data);
       }
@@ -52,3 +60,8 @@ class AuthenticationController extends ChangeNotifier {
     return null;
   }
 }
+
+final authenticationProvider =
+    ChangeNotifierProvider<AuthenticationController>((ref) {
+  return AuthenticationController();
+});
