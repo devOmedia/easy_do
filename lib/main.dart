@@ -1,4 +1,5 @@
 import 'package:easy_do/view/screens/login_screen.dart';
+import 'package:easy_do/view/screens/signup_screen.dart';
 import 'package:easy_do/view/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.id: (context) => const SplashScreen(),
         LoginScreen.id: (context) => const LoginScreen(),
+        SignupScreen.id: (context) => const SignupScreen(),
       },
 
     );

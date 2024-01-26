@@ -1,13 +1,13 @@
-class UserModel {
+class LoginModel {
   final User user;
   final String token;
 
-  UserModel({
+  LoginModel({
     required this.user,
     required this.token,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
     user: User.fromJson(json["user"]),
     token: json["token"],
   );
