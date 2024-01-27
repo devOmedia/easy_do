@@ -1,6 +1,8 @@
 import 'package:easy_do/controller/authentication_controller.dart';
 import 'package:easy_do/model/app_const/app_const.dart';
+import 'package:easy_do/view/screens/home_screen.dart';
 import 'package:easy_do/view/screens/signup_screen.dart';
+import 'package:easy_do/view/widgets/custom_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -115,14 +117,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               child: CircularProgressIndicator(),
                             )
                           : GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 if (_formState.currentState!.validate()) {
-                                  ref
+                                  final userData = await ref
                                       .read(authenticationProvider)
                                       .getUserLoggedIn({
                                     "email": _emailCtr.text,
                                     "password": _passwordCtr.text,
                                   });
+
+                                  if (userData != null) {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pushReplacementNamed(
+                                        context, HomeScreen.id);
+                                  }
                                 }
                               },
                               child: Container(
@@ -162,44 +170,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class CustomInputField extends StatelessWidget {
-  const CustomInputField({
-    super.key,
-    required this.controller,
-    required this.hint,
-    this.inputAction = TextInputAction.next,
-    this.inputType = TextInputType.text,
-    required this.validator,
-  });
-
-  final TextEditingController controller;
-  final String hint;
-  final TextInputAction inputAction;
-  final TextInputType inputType;
-  final String? Function(String?)? validator;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      textInputAction: inputAction,
-      controller: controller,
-      keyboardType: inputType,
-      decoration: InputDecoration(
-        // border: InputBorder.none,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade100, width: 0.0),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: Colors.grey.shade300,
-        ),
-      ),
-      validator: validator,
     );
   }
 }
