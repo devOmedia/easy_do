@@ -1,4 +1,5 @@
 import 'package:easy_do/controller/authentication_controller.dart';
+import 'package:easy_do/view/screens/home_screen.dart';
 import 'package:easy_do/view/screens/login_screen.dart';
 import 'package:easy_do/view/widgets/custom_auth_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -159,17 +160,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               ),
                             )
                           : GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  ref
+                                  final data = await ref
                                       .read(authenticationProvider)
-                                      .getUserSignUp(
-                                    {
-                                      "name": _nameCtr.text,
-                                      "email": _emailCtr.text,
-                                      "password": _passwordCtr.text,
-                                    },
-                                  );
+                                      .getUserSignUp({
+                                    "name": _nameCtr.text,
+                                    "email": _emailCtr.text,
+                                    "password": _passwordCtr.text,
+                                  });
+
+                                  if (data != null) {
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pushReplacementNamed(
+                                        context, HomeScreen.id);
+                                  }
                                 }
                               },
                               child: Container(

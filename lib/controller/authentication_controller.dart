@@ -35,7 +35,7 @@ class AuthenticationController extends ChangeNotifier {
 
         UserData.setAccessToken(LoginModel.fromJson(response.data).token);
 
-        log(response.data);
+        log(response.data.toString());
 
         return LoginModel.fromJson(response.data);
       }
@@ -71,6 +71,8 @@ class AuthenticationController extends ChangeNotifier {
 
         UserData.setAccessToken(LoginModel.fromJson(response.data).token);
 
+        log(response.data.toString());
+
         return LoginModel.fromJson(response.data);
       }
     } on DioException catch (e) {
@@ -81,6 +83,7 @@ class AuthenticationController extends ChangeNotifier {
         print('Timeout error');
       } else if (e.type == DioExceptionType.badResponse) {
         print('Response error: ${e.response?.statusCode}');
+        print('Response: ${e.response?.data}');
         if (e.response?.statusCode == 400) {}
       } else if (e.type == DioExceptionType.cancel) {
         print('Request cancelled');
